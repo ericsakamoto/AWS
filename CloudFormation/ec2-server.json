@@ -6,12 +6,11 @@
                 "SecurityGroups": [
                     {
                         "Ref": "SKMTInstanceSecurityGroup"
-                    },
-                    "SKMTSecurityGroup"
+                    }
                 ],
                 "KeyName": "esakamoto-aws3-sp-key",
                 "ImageId": "ami-0f8243a5175208e08",
-                "AvailabilityZone" : "sa-east-1a"
+                "InstanceType": "t2.micro"
             }
         },
         "SKMTInstanceSecurityGroup": {
