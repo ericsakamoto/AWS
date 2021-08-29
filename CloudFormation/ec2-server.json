@@ -1,0 +1,32 @@
+{
+    "Resources": {
+        "Ec2Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "SecurityGroups": [
+                    {
+                        "Ref": "SKMTInstanceSecurityGroup"
+                    },
+                    "SKMTSecurityGroup"
+                ],
+                "KeyName": "esakamoto-aws3-sp-key",
+                "ImageId": "ami-0f8243a5175208e08",
+                "AvailabilityZone" : "sa-east-1a"
+            }
+        },
+        "SKMTInstanceSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Enable SSH access via port 22",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        }
+    }
+}
