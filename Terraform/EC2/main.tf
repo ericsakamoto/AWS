@@ -109,6 +109,8 @@ resource "aws_instance" "skmt_app_server" {
   user_data = <<-EOF
       #!/bin/bash
       sudo su - ec2-user
+      sudo amazon-linux-extras -y install epel
+      sudo yum -y install ansible
       aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 924309154876.dkr.ecr.sa-east-1.amazonaws.com
       docker pull 924309154876.dkr.ecr.sa-east-1.amazonaws.com/skmt/spring-boot-docker-rest-api:latest
       docker run -p 80:8080 924309154876.dkr.ecr.sa-east-1.amazonaws.com/skmt/spring-boot-docker-rest-api &
