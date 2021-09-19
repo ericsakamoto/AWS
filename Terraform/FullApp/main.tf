@@ -72,14 +72,13 @@ resource "aws_security_group" "skmt_sg" {
 resource "aws_security_group_rule" "skmt_sg_rule_1" {
   security_group_id = aws_security_group.skmt_sg.id
   type              = "ingress"
-  from_port         = 8080
-  to_port           = 8080
+  from_port         = 80
+  to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   ipv6_cidr_blocks  = ["::/0"]
 }
 
-/*
 resource "aws_security_group_rule" "skmt_sg_rule_2" {
   security_group_id = aws_security_group.skmt_sg.id
   type              = "ingress"
@@ -89,7 +88,6 @@ resource "aws_security_group_rule" "skmt_sg_rule_2" {
   cidr_blocks       = ["0.0.0.0/0"]
   ipv6_cidr_blocks  = ["::/0"]
 }
-*/
 
 resource "aws_security_group_rule" "skmt_sg_rule_3" {
   security_group_id = aws_security_group.skmt_sg.id
@@ -100,8 +98,8 @@ resource "aws_security_group_rule" "skmt_sg_rule_3" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-resource "aws_instance" "skmt_jenkins_server" {
-  ami                    = "ami-09b9b17384f68fd7c"
+resource "aws_instance" "skmt_app_server" {
+  ami                    = "ami-06a40c12e5bd9b028"
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.skmt_public_subnet.id
   vpc_security_group_ids = [aws_security_group.skmt_sg.id]
@@ -111,10 +109,11 @@ resource "aws_instance" "skmt_jenkins_server" {
   user_data = <<-EOF
       #!/bin/bash
       sudo su - ec2-user
-      sudo yum update –y
-      sudo wget https://get.jenkins.io/war/2.312/jenkins.war
-      sudo yum install java-1.8.0-openjdk -y
-      java -jar jenkins.war
+      sudo amazon-linux-extras -y install epel
+      sudo yum -y install ansible
+      aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 924309154876.dkr.ecr.sa-east-1.amazonaws.com
+      docker pull 924309154876.dkr.ecr.sa-east-1.amazonaws.com/skmt/spring-boot-docker-rest-api:latest
+      docker run -p 80:8080 924309154876.dkr.ecr.sa-east-1.amazonaws.com/skmt/spring-boot-docker-rest-api &
   EOF
 
   tags = {

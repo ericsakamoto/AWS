@@ -99,7 +99,7 @@ resource "aws_security_group_rule" "skmt_sg_rule_3" {
 }
 
 resource "aws_instance" "skmt_app_server" {
-  ami                    = "ami-06a40c12e5bd9b028"
+  ami                    = "ami-06a40c12e5bd9b028" //EC2 Docker private image
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.skmt_public_subnet.id
   vpc_security_group_ids = [aws_security_group.skmt_sg.id]
