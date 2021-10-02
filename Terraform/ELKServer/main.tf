@@ -72,21 +72,19 @@ resource "aws_security_group" "skmt_sg_elk" {
 resource "aws_security_group_rule" "skmt_sg_rule_1_elk" {
   security_group_id = aws_security_group.skmt_sg_elk.id
   type              = "ingress"
-  from_port         = 80
-  to_port           = 80
+  from_port         = 5601
+  to_port           = 5601
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
 }
 
 resource "aws_security_group_rule" "skmt_sg_rule_2_elk" {
   security_group_id = aws_security_group.skmt_sg_elk.id
   type              = "ingress"
-  from_port         = 22
-  to_port           = 22
+  from_port         = 9200
+  to_port           = 9200
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
 }
 
 resource "aws_security_group_rule" "skmt_sg_rule_3_elk" {
@@ -100,7 +98,7 @@ resource "aws_security_group_rule" "skmt_sg_rule_3_elk" {
   
 resource "aws_instance" "skmt_elk_server" {
   ami                    = "ami-06a40c12e5bd9b028" //My Docker AMI
-  instance_type          = "t2.micro"
+  instance_type          = "t2.medium"
   subnet_id              = aws_subnet.skmt_public_subnet_elk.id
   vpc_security_group_ids = [aws_security_group.skmt_sg_elk.id]
   key_name               = "esakamoto-aws3-sp-key2"

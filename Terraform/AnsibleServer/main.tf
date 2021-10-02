@@ -76,17 +76,15 @@ resource "aws_security_group_rule" "skmt_sg_rule_1_ansible" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
 }
 
 resource "aws_security_group_rule" "skmt_sg_rule_2_ansible" {
   security_group_id = aws_security_group.skmt_sg_ansible.id
   type              = "ingress"
-  from_port         = 22
-  to_port           = 22
+  from_port         = 443
+  to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
 }
 
 resource "aws_security_group_rule" "skmt_sg_rule_3_ansible" {
@@ -115,6 +113,25 @@ resource "aws_instance" "skmt_ansible_server" {
 
   tags = {
     Name = var.instance_name
+    SKMT-SystemManager = true
+  }
+}
+
+resource "aws_instance" "skmt_ansible_client" {
+  count                  = 2
+  ami                    = "ami-09b9b17384f68fd7c"
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.skmt_public_subnet_ansible.id
+  vpc_security_group_ids = [aws_security_group.skmt_sg_ansible.id]
+  key_name               = "esakamoto-aws3-sp-key2"
+  iam_instance_profile = "SKMT-EC2-Role"
+  user_data = <<-EOF
+      #!/bin/bash
+
+  EOF
+
+  tags = {
+    Name = "SKMT-Client-${count.index}"
     SKMT-SystemManager = true
   }
 }

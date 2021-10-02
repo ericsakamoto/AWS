@@ -76,17 +76,15 @@ resource "aws_security_group_rule" "skmt_sg_rule_1_ec2_fbt" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
 }
 
 resource "aws_security_group_rule" "skmt_sg_rule_2_ec2_fbt" {
   security_group_id = aws_security_group.skmt_sg_ec2_fbt.id
   type              = "ingress"
-  from_port         = 22
-  to_port           = 22
+  from_port         = 443
+  to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
 }
 
 resource "aws_security_group_rule" "skmt_sg_rule_3_ec2_fbt" {
@@ -108,11 +106,7 @@ resource "aws_instance" "skmt_ec2_fbt_server" {
   iam_instance_profile = "SKMT-EC2-Role"
   user_data = <<-EOF
       #!/bin/bash
-      sudo su - ec2-user
-      sudo amazon-linux-extras -y install epel
-      sudo yum -y install ansible
-      aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 924309154876.dkr.ecr.sa-east-1.amazonaws.com
-      docker pull 924309154876.dkr.ecr.sa-east-1.amazonaws.com/skmt/spring-boot-docker-rest-api:latest
+
   EOF
 
   tags = {
