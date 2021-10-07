@@ -10,105 +10,30 @@ terraform {
 
 provider "aws" {
   profile = "default"
-  region  = "sa-east-1"
+  region  = "us-east-1"
 }
 
-resource "aws_vpc" "skmt_vpc_ansible" {
-  cidr_block       = "10.0.0.0/16"
-  instance_tenancy = "default"
+data "terraform_remote_state" "vpc" {
+  backend = "local"
 
-  tags = {
-    Name = "skmt_vpc_ansible"
+  config = {
+    path = "../VPC/terraform.tfstate"
   }
-}
-
-resource "aws_internet_gateway" "smkt_igw_ansible" {
-  vpc_id = aws_vpc.skmt_vpc_ansible.id
-
-  tags = {
-    Name = "smkt_igw_ansible"
-  }
-}
-
-resource "aws_subnet" "skmt_public_subnet_ansible" {
-  vpc_id     = aws_vpc.skmt_vpc_ansible.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "sa-east-1a"
-
-  tags = {
-    Name = "skmt_public_subnet"
-  }
-}
-
-resource "aws_route_table" "skmt_route_table_ansible" {
-  vpc_id = aws_vpc.skmt_vpc_ansible.id
-
-  tags = {
-    Name = "skmt_route_table_ansible"
-  }
-}
-
-resource "aws_route" "skmt_route_1_ansible" {
-  route_table_id            = aws_route_table.skmt_route_table_ansible.id
-  destination_cidr_block    = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.smkt_igw_ansible.id
-}
-
-resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.skmt_public_subnet_ansible.id
-  route_table_id = aws_route_table.skmt_route_table_ansible.id
-}
-
-resource "aws_security_group" "skmt_sg_ansible" {
-  name        = "skmt_sg_ansible"
-  description = "Security Group for SKMT VPC"
-  vpc_id      = aws_vpc.skmt_vpc_ansible.id
-
-  tags = {
-    Name = "skmt_sg_ansible"
-  }
-}
-
-resource "aws_security_group_rule" "skmt_sg_rule_1_ansible" {
-  security_group_id = aws_security_group.skmt_sg_ansible.id
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-}
-
-resource "aws_security_group_rule" "skmt_sg_rule_2_ansible" {
-  security_group_id = aws_security_group.skmt_sg_ansible.id
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-}
-
-resource "aws_security_group_rule" "skmt_sg_rule_3_ansible" {
-  security_group_id = aws_security_group.skmt_sg_ansible.id
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_instance" "skmt_ansible_server" {
-  ami                    = "ami-09b9b17384f68fd7c"
+  ami                    = "ami-02e136e904f3da870"
   instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.skmt_public_subnet_ansible.id
-  vpc_security_group_ids = [aws_security_group.skmt_sg_ansible.id]
-  key_name               = "esakamoto-aws3-sp-key2"
+  subnet_id              = data.terraform_remote_state.vpc.outputs.skmt_public_subnet_ansible //aws_subnet.skmt_public_subnet_ansible.id
+  vpc_security_group_ids = [data.terraform_remote_state.vpc.outputs.skmt_sg_ansible] //[aws_security_group.skmt_sg_ansible.id]
+  key_name               = "esakamoto-aws3-us-key"
   associate_public_ip_address = true
   iam_instance_profile = "SKMT-EC2-Role"
   user_data = <<-EOF
       #!/bin/bash
       sudo su - ec2-user
       sudo amazon-linux-extras -y install epel
-      sudo yum -y install ansible
+      sudo amazon-linux-extras -y install ansible2
   EOF
 
   tags = {
@@ -119,11 +44,11 @@ resource "aws_instance" "skmt_ansible_server" {
 
 resource "aws_instance" "skmt_ansible_client" {
   count                  = 2
-  ami                    = "ami-09b9b17384f68fd7c"
+  ami                    = "ami-02e136e904f3da870"
   instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.skmt_public_subnet_ansible.id
-  vpc_security_group_ids = [aws_security_group.skmt_sg_ansible.id]
-  key_name               = "esakamoto-aws3-sp-key2"
+  subnet_id              = data.terraform_remote_state.vpc.outputs.skmt_public_subnet_ansible //aws_subnet.skmt_public_subnet_ansible.id
+  vpc_security_group_ids = [data.terraform_remote_state.vpc.outputs.skmt_sg_ansible] //[aws_security_group.skmt_sg_ansible.id]
+  key_name               = "esakamoto-aws3-us-key"
   iam_instance_profile = "SKMT-EC2-Role"
   user_data = <<-EOF
       #!/bin/bash
