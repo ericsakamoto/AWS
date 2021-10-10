@@ -1,0 +1,28 @@
+---
+- name: Telnet servers 
+  hosts: AppServers
+  #remote_user: root
+
+  tasks:
+    - name: Install Netcat
+      #package: name='java-1.8.0-openjdk' state=latest
+      ansible.builtin.yum:
+        name: nc
+        state: latest
+      become: yes
+
+    - name: Test telnet
+      ansible.builtin.command: nc -v -i 5 -w 5 uol.com.br 444
+      register: result
+      failed_when: result.rc == 1 and "Connected to" in result.stdout
+
+    - name: Second way to test telnet
+      wait_for:
+        host: uol.com.br
+        port: "{{ item }}"
+        state: started
+        delay: 5
+        timeout: 5
+      ignore_errors: yes
+      with_items:
+        - 443

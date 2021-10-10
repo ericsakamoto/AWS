@@ -1,0 +1,9 @@
+---
+  - name: Check AWS SSM Agent Status
+    hosts: AppServers
+
+    tasks:
+    - name: Check AWS SSM Service
+      ansible.builtin.service:
+        name: amazon-ssm-agent
+        state: started

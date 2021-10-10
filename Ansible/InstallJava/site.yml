@@ -1,5 +1,12 @@
 ---
-- hosts: tomcat_servers
+- name: Update AppServers
+  hosts: AppServers
+  #remote_user: root
+
   tasks:
     - name: Install Java
-      package: name='java-1.8.0-openjdk' state=latest
+      #package: name='java-1.8.0-openjdk' state=latest
+      ansible.builtin.yum:
+        name: java-1.8.0-openjdk
+        state: latest
+      become: yes 
