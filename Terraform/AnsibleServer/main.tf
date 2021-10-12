@@ -49,6 +49,7 @@ resource "aws_instance" "skmt_ansible_client" {
   subnet_id              = data.terraform_remote_state.vpc.outputs.skmt_public_subnet_ansible //aws_subnet.skmt_public_subnet_ansible.id
   vpc_security_group_ids = [data.terraform_remote_state.vpc.outputs.skmt_sg_ansible] //[aws_security_group.skmt_sg_ansible.id]
   key_name               = "esakamoto-aws3-us-key"
+  associate_public_ip_address = tr
   iam_instance_profile = "SKMT-EC2-Role"
   user_data = <<-EOF
       #!/bin/bash
