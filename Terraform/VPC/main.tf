@@ -81,8 +81,8 @@ resource "aws_security_group_rule" "skmt_sg_rule_1_ansible" {
 resource "aws_security_group_rule" "skmt_sg_rule_2_ansible" {
   security_group_id = aws_security_group.skmt_sg_ansible.id
   type              = "ingress"
-  from_port         = 443
-  to_port           = 443
+  from_port         = 1000
+  to_port           = 1000
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
 }
@@ -93,5 +93,14 @@ resource "aws_security_group_rule" "skmt_sg_rule_3_ansible" {
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "skmt_sg_rule_4_ansible" {
+  security_group_id = aws_security_group.skmt_sg_ansible.id
+  type              = "ingress"
+  from_port         = 7681
+  to_port           = 7687
+  protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
 }
