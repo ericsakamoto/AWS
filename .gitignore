@@ -2,3 +2,5 @@
 **/.terraform
 esakamoto-aws3-sp-key2.pem
 Terraform/DockerApp/esakamoto-aws3-sp-key2.pem
+Terraform/EC2/terraform.tfstate
+Terraform/EC2/terraform.tfstate.backup

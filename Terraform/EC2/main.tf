@@ -110,6 +110,7 @@ resource "aws_instance" "skmt_app_server" {
       sudo su - ec2-user
       sudo amazon-linux-extras -y install epel
       sudo yum -y install docker
+      sudo yum -y install git
       sudo systemctl enable docker.service
       sudo systemctl start docker.service
       sudo usermod -a -G docker ec2-user
