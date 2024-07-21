@@ -99,21 +99,22 @@ resource "aws_security_group_rule" "skmt_sg_rule_3" {
 }
 
 resource "aws_instance" "skmt_app_server" {
-  ami                    = "ami-06a40c12e5bd9b028" //EC2 Docker private image
+  ami                    = "ami-000aa26b054f3a383" //EC2 Docker private image
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.skmt_public_subnet.id
   vpc_security_group_ids = [aws_security_group.skmt_sg.id]
-  key_name               = "esakamoto-aws3-sp-key2"
+  key_name               = "esakamoto-aws4-sp-key"
   associate_public_ip_address = true
-  iam_instance_profile = "SKMT-EC2-Role"
   user_data = <<-EOF
       #!/bin/bash
       sudo su - ec2-user
       sudo amazon-linux-extras -y install epel
-      sudo yum -y install ansible
-      aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 924309154876.dkr.ecr.sa-east-1.amazonaws.com
-      docker pull 924309154876.dkr.ecr.sa-east-1.amazonaws.com/skmt/spring-boot-docker-rest-api:latest
-      docker run -p 80:8080 924309154876.dkr.ecr.sa-east-1.amazonaws.com/skmt/spring-boot-docker-rest-api &
+      sudo yum -y install docker
+      sudo systemctl enable docker.service
+      sudo systemctl start docker.service
+      sudo usermod -a -G docker ec2-user
+      id ec2-user
+      newgrp docker
   EOF
 
   tags = {
